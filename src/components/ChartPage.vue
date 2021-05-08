@@ -2,66 +2,36 @@
   <div class="chart-page">
     <canvas id="myChart" class="chart-page__canvas"/>
   </div>
-
 </template>
 
 <script>
 
 import Chart from 'chart.js/auto'
+import store from '@/store'
+import lodash from 'lodash'
 import { defineComponent, onMounted } from 'vue'
 export default defineComponent({
   name: 'ChartPage',
   setup () {
-    const data = [
-      {
-        start_date: '25.03.2021 15:11',
-        name: 'MAIL',
-        type: 'buy',
-        number: 2,
-        price: 1713,
-        commission_sistem: 0.32,
-        commission_bank: 2.06
-      },
-      {
-        start_date: '12.03.2021 10:10',
-        name: 'MVID',
-        type: 'buy',
-        number: 2,
-        price: 735,
-        commission_sistem: 0.14,
-        commission_bank: 0.88
-      },
-      {
-        start_date: '25.03.2021 15:11',
-        name: 'MAIL',
-        type: 'buy',
-        number: 2,
-        price: 1713,
-        commission_sistem:
-          0.32,
-        commission_bank: 2.06
-      },
-      {
-        start_date: '12.03.2021 10:10',
-        name: 'MVID',
-        type: 'buy',
-        number: 2,
-        price: 735,
-        commission_sistem: 0.14,
-        commission_bank: 0.88
-      }
-    ]
-
     onMounted(() => {
-      const ctx = document.getElementById('myChart').getContext('2d')
+      const data = store.state.dataXls
+      const group = lodash.groupBy(data, 'Код финансового инструмента')
 
+      const summaryValueGroups = Object.values(group)
+        .map(item => item.reduce((summ, curr) => summ + Number(curr['Объём сделки']), 0))
+
+      const X = Object.keys(group)
+      const Y = summaryValueGroups
+
+      const ctx = document.getElementById('myChart').getContext('2d')
       const myChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
+
         data: {
-          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: X,
           datasets: [{
             label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            data: Y,
             backgroundColor: [
               'rgba(255, 99, 132, 0.2)',
               'rgba(54, 162, 235, 0.2)',
@@ -82,8 +52,8 @@ export default defineComponent({
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: true
+          // responsive: true,
+          // maintainAspectRatio: true
         }
       })
     })
@@ -96,11 +66,11 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .chart-page {
-  height: 200px;
-  width: 100%;
+  height: 90%;
+  width: 90%;
 }
-.chart-page__canvas {
-  height: 100px;
-  width: 100px;
-}
+//.chart-page__canvas {
+//  height: 90% !important;
+//  width: 90% !important;
+//}
 </style>
