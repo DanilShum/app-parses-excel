@@ -13,6 +13,9 @@
   text-align: center;
   color: #2c3e50;
 }
+* {
+  box-sizing: border-box;
+}
 </style>
 <style lang="scss">
 @import 'primevue/resources/themes/saga-blue/theme.css';

@@ -1,20 +1,30 @@
 <template>
   <div class="home">
     <top-menu/>
-    <chart-page/>
+    <chart-page v-if="isDataXls"/>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 import TopMenu from '@/components/TopMenu.vue'
 import ChartPage from '@/components/ChartPage.vue'
+import store from '@/store'
 
 export default defineComponent({
   name: 'Home',
   components: {
     ChartPage,
     TopMenu
+  },
+  setup () {
+    const isDataXls = computed(() => {
+      return store.state.dataXls.length
+    })
+
+    return {
+      isDataXls
+    }
   }
 })
 </script>
