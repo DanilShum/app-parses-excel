@@ -1,4 +1,5 @@
 <template>
+  <div>
     <label class="download"  @mouseenter="dragOverHandler" @mouseleave="dragLeaveHandler"  @change="filePicked">
       <div  class="download__drag" :class="{'download__drag_over':data.isDragAndDrop}">
         <div v-if="data.isDragAndDrop">перетащите сюда ваш XLS или нажмите для выбора</div>
@@ -9,26 +10,39 @@
       </div>
       <input class="download__input-upload" type="file" id="my_file_input" @change="filePicked"/>
     </label>
+    <modal-chart
+      v-if="dataXls.length && isClosedModal"
+      :data="dataXls"
+      @close="isClosedModal = false"
+    />
+  </div>
 
 </template>
 
-<script>
-import { defineComponent, reactive, onMounted, onUnmounted } from 'vue'
+<script lang="ts">
+import { defineComponent, reactive, onMounted, onUnmounted, computed } from 'vue'
 import XLSX from 'xlsx'
-import store from 'src/store'
+import store from '@/store'
+import ModalChart from '@/components/ModalChart.vue'
+import { downloadDataInterface } from '@/components/download/DownloadData.interface'
 
 export default defineComponent({
   name: 'Download',
-  components: { },
+  components: { ModalChart },
   props: {
 
   },
+  data: () => ({
+    isClosedModal: true
+  }),
   setup () {
-    const data = reactive({
+    const data:downloadDataInterface = reactive({
       isDragAndDrop: false,
       files: [],
-      container: ''
+      container: { }
     })
+
+    const dataXls = computed(() => store.state.dataXls)
 
     onMounted(() => {
       data.container = document.querySelector('.download')
@@ -40,10 +54,10 @@ export default defineComponent({
       data.container.removeEventListener('drop', dropHandler)
       data.container.removeEventListener('dragover', dragOverHandler)
       data.container.removeEventListener('dragleave', dragLeaveHandler)
-      data.container = null
+      data.container = {}
     })
 
-    const dragOverHandler = (e) => {
+    const dragOverHandler = (e:any) => {
       e.preventDefault()
       data.isDragAndDrop = true
       return false
@@ -53,19 +67,18 @@ export default defineComponent({
       return false
     }
 
-    const dropHandler = (e) => {
+    const dropHandler = (e:any) => {
       e.preventDefault()
       data.isDragAndDrop = false
       // нудно эмитить для открытия модалки
       filePicked(e)
     }
 
-    const filePicked = (event) => {
-      console.log(event)
+    const filePicked = (event: any) => {
       const files = event.dataTransfer ? event.dataTransfer.files : event.target.files
       const f = files[0]
       const reader = new FileReader()
-      reader.onload = function (e) {
+      reader.onload = function (e: any) {
         const data = new Uint8Array(e.target.result)
         const workbook = XLSX.read(data, { type: 'array' })
         const sheetName = workbook.SheetNames[0]
@@ -81,7 +94,8 @@ export default defineComponent({
       filePicked,
       dragOverHandler,
       dragLeaveHandler,
-      data
+      data,
+      dataXls
     }
   }
 })
