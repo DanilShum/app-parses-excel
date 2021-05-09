@@ -19,7 +19,7 @@ import TreeSelect from 'primevue/treeselect'
 import lodash from 'lodash'
 import store from '@/store'
 
-import { computed, defineComponent, reactive } from 'vue'
+import { computed, defineComponent } from 'vue'
 export default defineComponent({
   name: 'ModalChart',
   components: { Panel, TreeSelect, Button },
