@@ -15,10 +15,10 @@ export default defineComponent({
   setup () {
     onMounted(() => {
       const data = store.state.dataXls
-      const group = lodash.groupBy(data, 'Код финансового инструмента')
+      const group = lodash.groupBy(data, store.state.fieldY)
 
       const summaryValueGroups = Object.values(group)
-        .map(item => item.reduce((summ, curr) => summ + Number(curr['Объём сделки']), 0))
+        .map(item => item.reduce((summ, curr) => summ + Number(curr[store.state.fieldX]), 0))
 
       const X = Object.keys(group)
       const Y = summaryValueGroups

@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <top-menu/>
-    <chart-page v-if="isDataXls"/>
+    <chart-page v-if="isData.x && isData.y"/>
   </div>
 </template>
 
@@ -18,12 +18,15 @@ export default defineComponent({
     TopMenu
   },
   setup () {
-    const isDataXls = computed(() => {
-      return store.state.dataXls.length
+    const isData = computed(() => {
+      return {
+        x: store.state.fieldX,
+        y: store.state.fieldY
+      }
     })
 
     return {
-      isDataXls
+      isData
     }
   }
 })
