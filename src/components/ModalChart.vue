@@ -1,5 +1,13 @@
 <template>
-    <Panel class="modal-chart" :header="header" >
+    <Panel class="modal-chart" >
+      <template #header>
+        <div class="modal-chart__header">
+          {{ header }}
+          <Button class="modal-chart__close p-button-rounded p-button-danger p-button-text" icon="pi pi-times"
+                  @click="closeModal" />
+        </div>
+
+      </template>
       <div class="modal-chart__content">
         <TreeSelect v-model="valueX" :options="fields" placeholder="Выбирите значения по оси Х" />
         <TreeSelect v-model="valueY" :options="fields" placeholder="Выбирите значения по оси Y" />
@@ -34,8 +42,8 @@ export default defineComponent({
     }
   },
   data: () => ({
-    valueX: { },
-    valueY: { }
+    valueX: {},
+    valueY: {}
   }),
   setup (props) {
     const fields = computed(() => {
@@ -86,5 +94,14 @@ export default defineComponent({
 .modal-chart__footer {
   display: flex;
   justify-content: flex-end;
+}
+.modal-chart__header {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.modal-chart__close {
+  position: absolute;
+  right: 0;
 }
 </style>
