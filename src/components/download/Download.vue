@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label class="download"  @mouseenter="dragOverHandler" @mouseleave="dragLeaveHandler"  @change="filePicked">
+    <label class="download"  @mouseenter="dragOverHandler" @mouseleave="dragLeaveHandler"  @change="downloadXLS">
       <div  class="download__drag" :class="{'download__drag_over':data.isDragAndDrop}">
         <div v-if="data.isDragAndDrop">перетащите сюда ваш XLS или нажмите для выбора</div>
 
@@ -8,12 +8,12 @@
           <i class="pi pi-download "/>
         </div>
       </div>
-      <input class="download__input-upload" type="file" id="my_file_input" @change="filePicked"/>
+      <input class="download__input-upload" type="file" id="my_file_input" @change="downloadXLS"/>
     </label>
     <modal-chart
-      v-if="dataXls.length && isClosedModal"
+      v-if="isOpenModal"
       :data="dataXls"
-      @close="isClosedModal = false"
+      @close="isOpenModal = false"
     />
   </div>
 
@@ -25,6 +25,7 @@ import XLSX from 'xlsx'
 import store from '@/store'
 import ModalChart from '@/components/ModalChart.vue'
 import { downloadDataInterface } from '@/components/download/DownloadData.interface'
+import { mapState } from 'vuex'
 
 export default defineComponent({
   name: 'Download',
@@ -33,16 +34,17 @@ export default defineComponent({
 
   },
   data: () => ({
-    isClosedModal: true
+    isOpenModal: false
   }),
+  computed: {
+    ...mapState(['dataXls'])
+  },
   setup () {
     const data:downloadDataInterface = reactive({
       isDragAndDrop: false,
       files: [],
       container: { }
     })
-
-    const dataXls = computed(() => store.state.dataXls)
 
     onMounted(() => {
       data.container = document.querySelector('.download')
@@ -70,7 +72,6 @@ export default defineComponent({
     const dropHandler = (e:any) => {
       e.preventDefault()
       data.isDragAndDrop = false
-      // нудно эмитить для открытия модалки
       filePicked(e)
     }
 
@@ -94,8 +95,14 @@ export default defineComponent({
       filePicked,
       dragOverHandler,
       dragLeaveHandler,
-      data,
-      dataXls
+      data
+    }
+  },
+  methods: {
+    async downloadXLS (event: any) {
+      await this.filePicked(event)
+      // TODO нужно как-то открывать модалку после загрузки данных
+      this.isOpenModal = true
     }
   }
 })
